@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../OpenCV/.idea/OpenCV.iml" filepath="$PROJECT_DIR$/../OpenCV/.idea/OpenCV.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../OpenCV_Projects/.idea/OpenCV_Projects.iml" filepath="$PROJECT_DIR$/../OpenCV_Projects/.idea/OpenCV_Projects.iml" />
+    </modules>
+  </component>
+</project>
