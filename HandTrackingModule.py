@@ -3,44 +3,53 @@ import mediapipe as mp
 import time
 
 
-class Detector:
+class handDetector():
     def __init__(self, mode=False, maxHands=2, detectCon=0.5, trackCon=0.5):
-        self.static_image_mode = mode
-        self.max_num_hands = maxHands
-        self.min_detection_confidence = detectCon
-        self.min_tracking_confidence = trackCon
+        self.mode = mode
+        self.maxHands = maxHands
+        self.detectCon = detectCon
+        self.trackCon = trackCon
         self.mpHands = mp.solutions.hands
-        self.hands = self.mpHands.Hands(mode, maxHands, detectCon, trackCon)
+        self.hands = self.mpHands.Hands(self.mode, self.maxHands, self.detectCon, self.trackCon)
         self.mpDraw = mp.solutions.drawing_utils
 
     def findHands(self, img, draw=True):
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        results = self.hands.process(imgRGB)
+        self.results = self.hands.process(imgRGB)
         # print(results.multi_hand_landmarks)
-        if results.multi_hand_landmarks:
-            for handLMS in results.multi_hand_landmarks:
-                self.mpDraw.draw_landmarks(img, handLMS, self.mpHands.HAND_CONNECTIONS)
+        if self.results.multi_hand_landmarks:
+            for handLMS in self.results.multi_hand_landmarks:
+                if draw:
+                    self.mpDraw.draw_landmarks(img, handLMS, self.mpHands.HAND_CONNECTIONS)
         return img
 
-    def findPositions(self, img, hand=0, draw=True):
-            for id, lm in enumerate(handLMS.landmark):
+    def findPositions(self, img, handNo=0, myID=[-1], draw=True):
+        lmList=[]
+        if self.results.multi_hand_landmarks:
+            myHand = self.results.multi_hand_landmarks[handNo]
+            for id, lm in enumerate(myHand.landmark):
                 # print(id, lm)
                 h, w, c = img.shape
                 cx, cy = int(lm.x*w), int(lm.y*h)
-                if id == 8:
-                    cv2.circle(img, (cx, cy), 10, (255,255,255), cv2.FILLED)
+                lmList.append([id, cx, cy])
+                if (-1 in myID or id in myID) and draw:
+                    cv2.circle(img, (cx, cy), 10, (255,0,255), cv2.FILLED)
+
+        return lmList
 
 
 def main():
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
     pTime = 0
     cTime = 0
-    detector = Detector
+    detector = handDetector()
 
     while True:
         success, img = cap.read()
-
-        img = detector.findHands(self=success, img=img)
+        img = detector.findHands(img)
+        lmList = detector.findPositions(img, myID=[4, 8])
+        if len(lmList):
+            print(lmList[8])
         cTime = time.time()
         fps = 1 / (cTime - pTime)
         pTime = cTime
