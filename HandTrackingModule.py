@@ -46,7 +46,7 @@ def main():
     while True:
         success, img = cap.read()
         img = detector.findHands(img)
-        lmList = detector.findPositions(img, myID=[4, 8])
+        lmList = detector.findPositions(img, myID=[4, 8, 12, 16, 20])
         if len(lmList):
             print(lmList[8])
         cTime = time.time()
