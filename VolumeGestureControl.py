@@ -13,7 +13,7 @@ wCam=1280
 hCam=720
 ################################################################################################################
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 cap.set(3, wCam)
 cap.set(4,hCam)
 
@@ -37,7 +37,7 @@ volpercent=0
 while True:
     success, img = cap.read()
     detector.findHands(img)
-    lmList = detector.findPositions(img, draw=True, myID=[4, 8])
+    lmList = detector.findPositions(img, handNo=0, draw=True, myID=[4, 8])
     if len(lmList):
         # print(lmList[4], lmList[8])
         x1, y1 = lmList[4][1], lmList[4][2]
@@ -58,9 +58,14 @@ while True:
     cTime=time.time()
     fps=1/(cTime-pTime)
     pTime=cTime
-    cv2.putText(img, 'FPS: '+str(int(fps)), (820,520), cv2.FONT_HERSHEY_SIMPLEX, 1, (0), 3)
-    cv2.rectangle(img, (40, int(volBar)), (80, 240), (0, 0, 255), thickness=cv2.FILLED)
+    cv2.putText(img, 'FPS: '+str(int(fps)), (1100,650), cv2.FONT_HERSHEY_SIMPLEX, 1, (200, 0, 0), 3)
+
+    if volpercent<=60:
+        cv2.rectangle(img, (40, int(volBar)), (80, 240), (0, 255, 0), thickness=cv2.FILLED)
+    else:
+        cv2.rectangle(img, (40, int(volBar)), (80, 240), (0, 0, 255), thickness=cv2.FILLED)
+
     cv2.rectangle(img, (40, 40), (80, 240), (0), 4)
-    cv2.putText(img, str(int(volpercent))+'%', (50, 280), cv2.FONT_HERSHEY_SIMPLEX, 1, (0), 2)
+    cv2.putText(img, str(int(volpercent))+'%', (40, 280), cv2.FONT_HERSHEY_TRIPLEX, 1, (0), 2)
     cv2.imshow("Webcam", img)
     cv2.waitKey(1)
