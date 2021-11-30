@@ -39,7 +39,7 @@ class handDetector():
                 yList.append(cy)
                 self.lmList.append([id, cx, cy])
                 if (-1 in myID or id in myID) and draw:
-                    cv2.circle(img, (cx, cy), 20, (0, 255, 0), cv2.FILLED)
+                    cv2.circle(img, (cx, cy), 10, (0, 255, 0), cv2.FILLED)
             self.boxCoord = min(xList), min(yList), max(xList), max(yList)
         return self.lmList, self.boxCoord
 
@@ -50,7 +50,7 @@ class handDetector():
 
         if draw:
             cv2.line(img, (x1, y1), (x2, y2), (0, 255, 0), 3)
-            cv2.circle(img, (cx, cy), 20, (0, 255, 0), cv2.FILLED)
+            cv2.circle(img, (cx, cy), 10, (0, 255, 0), cv2.FILLED)
             cv2.rectangle(img, (self.boxCoord[0] - 20, self.boxCoord[1] - 20),
                           (self.boxCoord[2] + 20, self.boxCoord[3] + 20), (0, 255, 0), 2)
 
