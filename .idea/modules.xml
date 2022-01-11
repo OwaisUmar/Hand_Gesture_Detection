@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../OpenCV_Basics/.idea/OpenCV_Basics.iml" filepath="$PROJECT_DIR$/../OpenCV_Basics/.idea/OpenCV_Basics.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/OpenCV_Projects.iml" filepath="$PROJECT_DIR$/.idea/OpenCV_Projects.iml" />
-      <module fileurl="file://$USER_HOME$/Documents/Figma/Proxlight_Designer_Export/.idea/Proxlight_Designer_Export.iml" filepath="$USER_HOME$/Documents/Figma/Proxlight_Designer_Export/.idea/Proxlight_Designer_Export.iml" />
     </modules>
   </component>
 </project>

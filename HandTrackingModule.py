@@ -1,4 +1,4 @@
-import cv2
+from cv2 import cv2
 import mediapipe as mp
 import time
 import math
@@ -39,7 +39,10 @@ class handDetector():
                 yList.append(cy)
                 self.lmList.append([id, cx, cy])
                 if (-1 in myID or id in myID) and draw:
-                    cv2.circle(img, (cx, cy), 10, (0, 255, 0), cv2.FILLED)
+                    cv2.circle(img, (cx, cy), 5, (0, 255, 0), cv2.FILLED)
+
+            if draw:
+                cv2.rectangle(img, (min(xList)-20, min(yList)-20), (max(xList)+20, max(yList)+20), (0, 255, 0), 2)
             self.boxCoord = min(xList), min(yList), max(xList), max(yList)
         return self.lmList, self.boxCoord
 
@@ -83,7 +86,7 @@ def main():
     while True:
         success, img = cap.read()
         img = detector.findHands(img)
-        lmList, boxCoord = detector.findPositions(img, draw=False)
+        lmList, boxCoord = detector.findPositions(img, draw=True)
 
         fingersUp = detector.fingersUp()
         if len(fingersUp):
