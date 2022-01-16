@@ -5,8 +5,6 @@ import math
 
 
 class HandDetector:
-    pTime = 0
-
     def __init__(self, mode=False, maxHands=2, detectCon=0.5, trackCon=0.5):
         self.mode = mode
         self.maxHands = maxHands
@@ -77,15 +75,17 @@ class HandDetector:
                 else:
                     fingersStatus.append(0)
         return fingersStatus
+    pTime = 0
 
-    def showFPS(self, img, pos=(20, 50), color=(0, 0, 0), thickness=1, box=False):
+    def showFPS(self, img, pos=(20, 50), fontSize=1, color=(0, 0, 0), thickness=1, box=False):
         cTime = time.time()
         fps = 1 / (cTime - self.pTime)
-        pTime = cTime
+        self.pTime = cTime
         if box:
-            cv2.rectangle(img, )
-            cv2.putText(img, "FPS: " + str(int(fps)), pos, cv2.FONT_HERSHEY_PLAIN, thickness, (255-color[0], 255-color[1], 255-color[2]))
-        cv2.putText(img, "FPS: " + str(int(fps)), (20, 50), cv2.FONT_HERSHEY_PLAIN, 1, color)
+            cv2.rectangle(img, pos, (pos[0]+fontSize*65, pos[1]+fontSize*30), color, thickness=cv2.FILLED)
+            cv2.putText(img, "FPS:" + str(int(fps)), (pos[0]+fontSize*5, pos[1]+fontSize*20), cv2.FONT_HERSHEY_PLAIN, fontSize, (255+color[0], 255+color[1], 255+color[2]), thickness)
+        else:
+            cv2.putText(img, "FPS:" + str(int(fps)), pos, cv2.FONT_HERSHEY_PLAIN, thickness, color)
 
 
 def main():
@@ -102,11 +102,7 @@ def main():
         fingersUp = detector.fingersUp()
         if len(fingersUp):
             print(fingersUp)
-        cTime = time.time()
-        fps = 1 / (cTime - pTime)
-        pTime = cTime
-        cv2.putText(img, str(int(fps)), (10, 50), cv2.FONT_HERSHEY_DUPLEX, 2, (0, 0, 0), 4)
-        # print(lmList)
+        detector.showFPS(img)
         cv2.imshow("Webcam", img)
         cv2.waitKey(1)
 

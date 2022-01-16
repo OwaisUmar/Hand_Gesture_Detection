@@ -29,7 +29,7 @@ textOut = ''
 
 def drawAll(img, buttonList):
     imgNew = np.zeros_like(img, np.uint8)
-    cv2.rectangle(imgNew, (50, 400), (1200, 460), (100, 0, 100), cv2.FILLED)  # Text box
+    cv2.rectangle(imgNew, (50, 500), (1200, 560), (100, 0, 100), cv2.FILLED)  # Text box
     cornerRect(imgNew, (1150, 50, 80, 50), 18, 4)
     cv2.rectangle(imgNew, (1150, 50), (1230, 100), (100, 0, 200), cv2.FILLED)  # quit button
     for button in buttonList:
@@ -126,12 +126,12 @@ while True:
                     if button.text == 'Quit':  # close if Quit is clicked
                         close = True
 
-    cv2.line(img, (cursorPos, 455), (cursorPos + 25, 455), (255, 255, 255), 1)      # cursor
+    cv2.line(img, (cursorPos, 555), (cursorPos + 25, 555), (255, 255, 255), 1)      # cursor
     cv2.putText(img, textOut, (60, 440), cv2.FONT_HERSHEY_PLAIN, 2.5, (255, 255, 255), 2)     # text display
     if lmList:
         cv2.circle(img, (lmList[8][1], lmList[8][2]), 3, (0, 255, 0), thickness=cv2.FILLED)     # finger pointer
 
-    # detector.showFPS(img)
+    detector.showFPS(img, (1150, 630), fontSize=1, box=True)
     cv2.imshow('Webcam', img)
     if cv2.waitKey(1) & close:
         break

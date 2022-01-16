@@ -10,7 +10,9 @@ tRange = 75  # Touching range
 smoothening = 5
 prevLocX, prevLocY = 0, 0
 
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
+cap.set(3, 1230)
+cap.set(4, 600)
 cTime = 0
 pTime = 0
 detector = htm.HandDetector(maxHands=1)
@@ -52,7 +54,7 @@ while True:
         if fingers[1] and fingers[2]:
             # 9. Find distance between fingers
             l, _ = detector.getDistance(img, 8, 12, draw=False)
-            print(l)
+            # print(l)
             if l < 30:
                 cv2.circle(img, (x1, y1), 10, (0, 255, 0), cv2.FILLED)
                 # 10. Click mouse if distance is short
@@ -71,9 +73,6 @@ while True:
         #         prevLocX, prevLocY = currLocX, currLocY
 
     # 12. Frame rate
-    cTime = time.time()
-    fps = 1 / (cTime - pTime)
-    pTime = cTime
-    cv2.putText(img, "FPS: " + str(int(fps)), (20, 50), cv2.FONT_HERSHEY_PLAIN, 1, (255, 0, 0))
+    detector.showFPS(img, (30, 30), box=True)
     cv2.imshow("Webcam", img)
     cv2.waitKey(1)
