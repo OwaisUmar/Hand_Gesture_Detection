@@ -13,7 +13,7 @@ prevLocX, prevLocY = 0, 0
 cap = cv2.VideoCapture(1)
 cTime = 0
 pTime = 0
-detector = htm.handDetector(maxHands=1)
+detector = htm.HandDetector(maxHands=1)
 
 while True:
     # 1. Find hand landmarks

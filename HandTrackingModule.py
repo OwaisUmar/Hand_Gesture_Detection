@@ -4,7 +4,9 @@ import time
 import math
 
 
-class handDetector():
+class HandDetector:
+    pTime = 0
+
     def __init__(self, mode=False, maxHands=2, detectCon=0.5, trackCon=0.5):
         self.mode = mode
         self.maxHands = maxHands
@@ -63,7 +65,6 @@ class handDetector():
     def fingersUp(self):
         fingersStatus = []
         fingerTipIDs = [4, 8, 12, 16, 20]
-
         if len(self.lmList):
             if self.lmList[fingerTipIDs[0]][1] > self.lmList[fingerTipIDs[0]-1][1]:
                 fingersStatus.append(1)
@@ -77,11 +78,21 @@ class handDetector():
                     fingersStatus.append(0)
         return fingersStatus
 
+    def showFPS(self, img, pos=(20, 50), color=(0, 0, 0), thickness=1, box=False):
+        cTime = time.time()
+        fps = 1 / (cTime - self.pTime)
+        pTime = cTime
+        if box:
+            cv2.rectangle(img, )
+            cv2.putText(img, "FPS: " + str(int(fps)), pos, cv2.FONT_HERSHEY_PLAIN, thickness, (255-color[0], 255-color[1], 255-color[2]))
+        cv2.putText(img, "FPS: " + str(int(fps)), (20, 50), cv2.FONT_HERSHEY_PLAIN, 1, color)
+
+
 def main():
     cap = cv2.VideoCapture(1)
     pTime = 0
     cTime = 0
-    detector = handDetector()
+    detector = HandDetector()
 
     while True:
         success, img = cap.read()

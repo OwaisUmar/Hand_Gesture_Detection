@@ -1,32 +1,51 @@
 from cv2 import cv2
 from time import sleep
-from pynput.keyboard import Controller
+from pynput.keyboard import Controller, Key
 from cvzone import cornerRect
+import numpy as np
 import HandTrackingModule as htm
 
 cap = cv2.VideoCapture(0)
 cap.set(3, 1230)
 cap.set(4, 600)
 
-detector = htm.handDetector(maxHands=1)
-keys = [['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '='],
-        ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '[', ']', '\\'],
-        ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ';', "'"],
-        ['Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', '/']]
+keyboard = Controller()
+detector = htm.HandDetector(maxHands=1)
+capsOff = [['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '='],
+        ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\'],
+        ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'"],
+        ['z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/']]
+
+capsOn = [['~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+'],
+            ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '|'],
+            ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '"'],
+            ['Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?']]
+
+
+caps = False
 buttonList = []
 textOut = ''
 
 
 def drawAll(img, buttonList):
-    cv2.rectangle(img, (50, 400), (1100, 460), (0, 50, 0), cv2.FILLED)  # Text box
-    # cornerRect(img, (50, 400, 1050, 60), 20, 4)
+    imgNew = np.zeros_like(img, np.uint8)
+    cv2.rectangle(imgNew, (50, 400), (1200, 460), (100, 0, 100), cv2.FILLED)  # Text box
+    cornerRect(imgNew, (1150, 50, 80, 50), 18, 4)
+    cv2.rectangle(imgNew, (1150, 50), (1230, 100), (100, 0, 200), cv2.FILLED)  # quit button
     for button in buttonList:
         x, y = button.pos
         w, h = button.size
-        cornerRect(img, (x, y, w, h), 15, 4)
-        cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), cv2.FILLED)
-        cv2.putText(img, button.text, (x + 12, y + 35), cv2.FONT_HERSHEY_PLAIN, 1.5, (255, 255, 255), 2)
-    return img
+        cornerRect(imgNew, (x, y, w, h), 15, 4)
+        if caps and button.text == "^ Shift":
+            cv2.rectangle(img, (x, y), (x + w, y + h), (150, 0, 230), cv2.FILLED)       # indicating caps on
+        else:
+            cv2.rectangle(imgNew, (x, y), (x + w, y + h), (100, 0, 200), cv2.FILLED)
+        cv2.putText(imgNew, button.text, (x + 12, y + 35), cv2.FONT_HERSHEY_PLAIN, 1.5, (255, 255, 255), 2)
+    out = img.copy()
+    alpha = 0.2
+    mask = imgNew.astype(bool)
+    out[mask] = cv2.addWeighted(img, alpha, imgNew, 1-alpha, 0)[mask]
+    return out
 
 
 class Button:
@@ -36,53 +55,84 @@ class Button:
         self.text = text
 
 
-y = 50
-for i in range(len(keys)):
-    x = 50 + i*20
+def drawButton(myKeys):
+    y = 50
+    for i in range(len(myKeys)):
+        x = 50 + i*20
 
-    if i == 3:
-        buttonList.append(Button((x+10, y), '^ Shift', size=(110, 50)))     # Shift key
-        x += 130
-    for j, key in enumerate(keys[i]):
-        if key == '\\':
-            buttonList.append(Button((x, y), key, size=(120, 50)))
-        else:
-            buttonList.append(Button((x, y), key))
-            x += 60
-    if i == 0:
-        buttonList.append(Button((x, y), '<--', size=(110, 50)))     # Backspace key
-    if i == 2:
-        buttonList.append(Button((x, y), ' Enter', size=(120, 50)))     # Enter key
-    y += 60
-    x += 10
+        for j, key in enumerate(myKeys[i]):
+            if key in '\\|':
+                buttonList.append(Button((x, y), key, size=(120, 50)))
+            else:
+                buttonList.append(Button((x, y), key))
+                x += 60
+        if i == 0:
+            buttonList.append(Button((x, y), '<--', size=(110, 50)))     # Backspace key
+        elif i == 2:
+            buttonList.append(Button((x, y), ' Enter', size=(125, 50)))     # Enter key
+        elif i == 3:
+            buttonList.append(Button((x, y), '^ Shift', size=(140, 50)))     # Shift key
+        y += 60
+        x += 10
+    buttonList.append(Button((180, y), ' ', size=(560, 50)))  # Space key
+    buttonList.append(Button((1150, 50), 'Quit', size=(80, 50)))  # quit button
 
-buttonList.append(Button((180, y), ' ', size=(560, 50)))     # Space key
+
+drawButton(capsOff)
 cursorPos = 60
 
 while True:
     success, img = cap.read()
-    img = detector.findHands(img)
-    lmList, bbox = detector.findPositions(img)
+    img = detector.findHands(img, draw=False)
+    lmList, bbox = detector.findPositions(img, draw=False)
     img = drawAll(img, buttonList)
+    close = False
 
     if lmList:
         for button in buttonList:
             x, y = button.pos
             w, h = button.size
             if x < lmList[8][1] < x+w and y < lmList[8][2] < y+h:
-                cv2.rectangle(img, (x, y), (x + w, y + h), (0, 200, 0), cv2.FILLED)
-                cv2.putText(img, button.text, (x + 15, y + 35), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
+                cornerRect(img, (x, y, w + 5, h + 5), 15, 4)
+                cv2.rectangle(img, (x, y), (x + w + 5, y + h + 5), (200, 0, 200), cv2.FILLED)
+                cv2.putText(img, button.text, (x + 12, y + 35), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
                 dist, _ = detector.getDistance(img, 8, 12, draw=False)
-                if dist < 30:
-                    cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 200), cv2.FILLED)
-                    cv2.putText(img, button.text, (x + 15, y + 35), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
+                if dist < 50:
+                    if button.text == ' Enter':
+                        keyboard.press(Key.enter)
+                    elif button.text == '<--':
+                        keyboard.press(Key.backspace)
+                    elif len(button.text) == 1:
+                        keyboard.press(button.text)
+                    cv2.rectangle(img, (x, y), (x + w + 5, y + h + 5), (0, 100, 0), cv2.FILLED)
+                    cv2.putText(img, button.text, (x + 12, y + 35), cv2.FONT_HERSHEY_PLAIN, 2, (255, 255, 255), 2)
                     if button.text == '<--':
                         textOut = textOut[:-1]
-                    else:
+                        cursorPos -= 30
+                    elif button.text == '^ Shift':
+                        buttonList = []
+                        if caps:
+                            keys = capsOff
+                            caps = False
+                        else:
+                            keys = capsOn
+                            caps = True
+                        drawButton(keys)
+
+                    elif len(button.text) == 1:
                         textOut += button.text
-                    cursorPos += 30
+                        cursorPos += 23
                     sleep(0.5)
-    cv2.line(img, (cursorPos, 450), (cursorPos + 30, 450), (255, 255, 255), 2)
-    cv2.putText(img, textOut, (60, 440), cv2.FONT_HERSHEY_PLAIN, 3, (255, 255, 255), 2)
+                    if button.text == 'Quit':  # close if Quit is clicked
+                        close = True
+
+    cv2.line(img, (cursorPos, 455), (cursorPos + 25, 455), (255, 255, 255), 1)      # cursor
+    cv2.putText(img, textOut, (60, 440), cv2.FONT_HERSHEY_PLAIN, 2.5, (255, 255, 255), 2)     # text display
+    if lmList:
+        cv2.circle(img, (lmList[8][1], lmList[8][2]), 3, (0, 255, 0), thickness=cv2.FILLED)     # finger pointer
+
+    # detector.showFPS(img)
     cv2.imshow('Webcam', img)
-    cv2.waitKey(1)
+    if cv2.waitKey(1) & close:
+        break
+
