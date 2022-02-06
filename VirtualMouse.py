@@ -1,8 +1,6 @@
 import numpy as np
 from cv2 import cv2
 import HandTrackingModule as htm
-import mediapipe as mp
-import time
 from autopy import mouse, screen
 import pyautogui
 from cvzone import cornerRect

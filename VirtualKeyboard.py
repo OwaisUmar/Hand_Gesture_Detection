@@ -127,7 +127,7 @@ while True:
                         close = True
 
     cv2.line(img, (cursorPos, 555), (cursorPos + 25, 555), (255, 255, 255), 1)      # cursor
-    cv2.putText(img, textOut, (60, 440), cv2.FONT_HERSHEY_PLAIN, 2.5, (255, 255, 255), 2)     # text display
+    cv2.putText(img, textOut, (60, 540), cv2.FONT_HERSHEY_PLAIN, 2.5, (255, 255, 255), 2)     # text display
     if lmList:
         cv2.circle(img, (lmList[8][1], lmList[8][2]), 3, (0, 255, 0), thickness=cv2.FILLED)     # finger pointer
 
